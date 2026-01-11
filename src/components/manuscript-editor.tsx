@@ -62,7 +62,7 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
 
-    // グリッド線を描画（緑系 - 標準的な原稿用紙の色）
+    // グリッド線を描画（あずき色/赤茶色 - 画像の色に合わせる）
     
     // 計算用の位置
     const leftSectionEnd = padding + halfCols * cellSize; // 左側10列の終わり
@@ -70,10 +70,10 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     const gyobiEnd = leftSectionEnd + gyobiWidth; // 魚尾列の終了
     const rightSectionStart = gyobiEnd; // 右側10列の開始
     
-    // 1. 通常のグリッド線（破線）
-    ctx.strokeStyle = '#70b070';
+    // 1. 通常のグリッド線（実線）
+    ctx.strokeStyle = '#e0a0a0';
     ctx.lineWidth = 0.8;
-    ctx.setLineDash([2, 2]); // 破線パターン
+    ctx.setLineDash([]); // 実線
     
     // 左側の縦線
     for (let col = 1; col < halfCols; col++) {
@@ -97,7 +97,7 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
     
-    // 横線（破線）
+    // 横線（実線）
     for (let row = 1; row < config.rows; row++) {
       // 5行ごとはスキップ（後で太線で描く）
       if (row % 5 === 0) continue;
@@ -109,9 +109,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     }
 
     // 2. 5行・5列ごとの太い実線
-    ctx.strokeStyle = '#509050';
+    ctx.strokeStyle = '#c07070';
     ctx.lineWidth = 1.2;
-    ctx.setLineDash([]); // 実線に戻す
 
     // 左側5列目の縦線
     const leftCol5 = padding + 5 * cellSize;
@@ -136,8 +135,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 3. 外枠を太く（濃い緑）
-    ctx.strokeStyle = '#407040';
+    // 3. 外枠を太く（濃いあずき色）
+    ctx.strokeStyle = '#a05050';
     ctx.lineWidth = 2.5;
     ctx.strokeRect(padding, padding, width - padding * 2, height - padding * 2);
 
@@ -146,45 +145,36 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     const bottomY = height - padding;
     const gyobiCenterX = gyobiStart + gyobiWidth / 2;
     
-    ctx.strokeStyle = '#407040';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#a05050';
+    ctx.lineWidth = 2.0;
     
-    // 上部の凹み位置（4-5行目の間あたり）
-    const upperNotchY = padding + 4.5 * cellSize;
-    const upperNotchRadius = gyobiWidth / 2; // 魚尾幅の半分を半径として使用
-    
-    // 下部の凹み位置（15-16行目の間あたり）
-    const lowerNotchY = padding + 15.5 * cellSize;
-    const lowerNotchRadius = gyobiWidth / 2;
-    
-    // 左側の境界線（凹みを含む）
+    // 魚尾列の左右の境界線（実線）
     ctx.beginPath();
-    // 上端から上部凹みの開始まで
     ctx.moveTo(gyobiStart, topY);
-    ctx.lineTo(gyobiStart, upperNotchY - upperNotchRadius);
-    // 上部の凹み（右向きの弧）
-    ctx.arc(gyobiCenterX, upperNotchY, upperNotchRadius, Math.PI, 0, false);
-    // 上部凹みの終わりから下部凹みの開始まで
-    ctx.lineTo(gyobiStart, lowerNotchY - lowerNotchRadius);
-    // 下部の凹み（右向きの弧）
-    ctx.arc(gyobiCenterX, lowerNotchY, lowerNotchRadius, Math.PI, 0, false);
-    // 下部凹みの終わりから下端まで
     ctx.lineTo(gyobiStart, bottomY);
     ctx.stroke();
     
-    // 右側の境界線（凹みを含む）
     ctx.beginPath();
-    // 上端から上部凹みの開始まで
     ctx.moveTo(gyobiEnd, topY);
-    ctx.lineTo(gyobiEnd, upperNotchY - upperNotchRadius);
-    // 上部の凹み（左向きの弧）
-    ctx.arc(gyobiCenterX, upperNotchY, upperNotchRadius, 0, Math.PI, false);
-    // 上部凹みの終わりから下部凹みの開始まで
-    ctx.lineTo(gyobiEnd, lowerNotchY - lowerNotchRadius);
-    // 下部の凹み（左向きの弧）
-    ctx.arc(gyobiCenterX, lowerNotchY, lowerNotchRadius, 0, Math.PI, false);
-    // 下部凹みの終わりから下端まで
     ctx.lineTo(gyobiEnd, bottomY);
+    ctx.stroke();
+    
+    // 上部の魚尾マーク（アーチ型 ⌒）
+    const upperY = padding + 4 * cellSize; // 4行目と5行目の間
+    ctx.beginPath();
+    // アーチを描画（quadraticCurveToを使用）
+    ctx.moveTo(gyobiStart, upperY + cellSize * 0.2);
+    ctx.quadraticCurveTo(gyobiCenterX, upperY - cellSize * 0.2, gyobiEnd, upperY + cellSize * 0.2);
+    ctx.stroke();
+    // アーチの下を塗りつぶし（オプション）
+    // ctx.fillStyle = '#a05050';
+    // ctx.fill();
+    
+    // 下部の魚尾マーク（横線 ー）
+    const lowerY = padding + 15 * cellSize; // 15行目と16行目の間
+    ctx.beginPath();
+    ctx.moveTo(gyobiStart + 2, lowerY); // 少し余白を空ける
+    ctx.lineTo(gyobiEnd - 2, lowerY);
     ctx.stroke();
 
     // このページの文字を取得
