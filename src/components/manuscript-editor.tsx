@@ -56,10 +56,10 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
 
-    // グリッド線を描画
+    // グリッド線を描画（赤/ピンク系 - 標準的な原稿用紙の色）
     // 1. 通常の細い線（全体）
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 0.5;
+    ctx.strokeStyle = '#e8b4b4';
+    ctx.lineWidth = 0.8;
 
     // 縦線（列）
     for (let col = 0; col <= config.cols; col++) {
@@ -79,8 +79,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 2. 5行・5列ごとの太線
-    ctx.strokeStyle = '#b0b0b0';
+    // 2. 5行・5列ごとの太線（やや濃いピンク）
+    ctx.strokeStyle = '#d49090';
     ctx.lineWidth = 1.2;
 
     // 縦線（5列ごと）
@@ -101,29 +101,36 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 3. 外枠を太く
-    ctx.strokeStyle = '#666666';
+    // 3. 外枠を太く（濃いピンク/赤）
+    ctx.strokeStyle = '#c07070';
     ctx.lineWidth = 2.5;
     ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
 
-    // 4. 中央マーク（◎）- 原稿用紙の標準デザイン
-    // 400字詰めの場合: 右から10列目と11列目の境界線、上から10行目と11行目の境界線の交点
+    // 4. 魚尾（ぎょび）- 原稿用紙の中央デザイン
+    // 中央の縦線と、上下にカギ型のマークを描画
     const centerCol = Math.floor(config.cols / 2); // 10
     const centerRow = Math.floor(config.rows / 2); // 10
     const centerX = padding + centerCol * cellSize; // 列の境界線上
     const centerY = padding + centerRow * cellSize; // 行の境界線上
     
-    ctx.strokeStyle = '#888888';
-    ctx.lineWidth = 1.0;
+    ctx.strokeStyle = '#c07070';
+    ctx.lineWidth = 1.5;
     
-    // 外側の円
+    // 上部のカギ型マーク（⌐）
+    const hookSize = cellSize * 0.4;
     ctx.beginPath();
-    ctx.arc(centerX, centerY, cellSize * 0.30, 0, Math.PI * 2);
+    ctx.moveTo(centerX - hookSize, centerY - cellSize * 0.1);
+    ctx.lineTo(centerX - hookSize, centerY - hookSize);
+    ctx.lineTo(centerX + hookSize, centerY - hookSize);
+    ctx.lineTo(centerX + hookSize, centerY - cellSize * 0.1);
     ctx.stroke();
     
-    // 内側の円
+    // 下部のカギ型マーク（⌞）
     ctx.beginPath();
-    ctx.arc(centerX, centerY, cellSize * 0.15, 0, Math.PI * 2);
+    ctx.moveTo(centerX - hookSize, centerY + cellSize * 0.1);
+    ctx.lineTo(centerX - hookSize, centerY + hookSize);
+    ctx.lineTo(centerX + hookSize, centerY + hookSize);
+    ctx.lineTo(centerX + hookSize, centerY + cellSize * 0.1);
     ctx.stroke();
 
     // このページの文字を取得
