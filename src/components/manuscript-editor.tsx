@@ -39,12 +39,16 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     if (!ctx) return;
 
     // キャンバスサイズ設定（高解像度対応）
+    // 魚尾付き原稿用紙: 横21列（左10列 + 魚尾1列 + 右10列）× 縦20行
     const scale = 2;
     const cellSize = 38; // 文字マスのサイズ
+    const gyobiWidth = cellSize * 0.6; // 魚尾列の幅（細い）
     const padding = 80; // 余白
     
-    // 標準的な原稿用紙：横20列×縦20行
-    const width = config.cols * cellSize + padding * 2;
+    // 幅 = 左10列 + 魚尾列 + 右10列
+    const textCols = config.cols; // 文字用の列数（20列）
+    const halfCols = textCols / 2; // 片側の列数（10列）
+    const width = textCols * cellSize + gyobiWidth + padding * 2;
     const height = config.rows * cellSize + padding * 2;
 
     canvas.width = width * scale;
@@ -58,12 +62,23 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
 
-    // グリッド線を描画（赤/ピンク系 - 標準的な原稿用紙の色）
-    ctx.strokeStyle = '#e8b4b4';
-    ctx.lineWidth = 0.8;
+    // グリッド線を描画（緑系 - 標準的な原稿用紙の色）
     
-    // 縦線
-    for (let col = 0; col <= config.cols; col++) {
+    // 計算用の位置
+    const leftSectionEnd = padding + halfCols * cellSize; // 左側10列の終わり
+    const gyobiStart = leftSectionEnd; // 魚尾列の開始
+    const gyobiEnd = leftSectionEnd + gyobiWidth; // 魚尾列の終了
+    const rightSectionStart = gyobiEnd; // 右側10列の開始
+    
+    // 1. 通常のグリッド線（破線）
+    ctx.strokeStyle = '#70b070';
+    ctx.lineWidth = 0.8;
+    ctx.setLineDash([2, 2]); // 破線パターン
+    
+    // 左側の縦線
+    for (let col = 1; col < halfCols; col++) {
+      // 5列目はスキップ（後で太線で描く）
+      if (col === 5) continue;
       const x = padding + col * cellSize;
       ctx.beginPath();
       ctx.moveTo(x, padding);
@@ -71,8 +86,21 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
     
-    // 横線
-    for (let row = 0; row <= config.rows; row++) {
+    // 右側の縦線
+    for (let col = 1; col < halfCols; col++) {
+      // 5列目はスキップ（後で太線で描く）
+      if (col === 5) continue;
+      const x = rightSectionStart + col * cellSize;
+      ctx.beginPath();
+      ctx.moveTo(x, padding);
+      ctx.lineTo(x, height - padding);
+      ctx.stroke();
+    }
+    
+    // 横線（破線）
+    for (let row = 1; row < config.rows; row++) {
+      // 5行ごとはスキップ（後で太線で描く）
+      if (row % 5 === 0) continue;
       const y = padding + row * cellSize;
       ctx.beginPath();
       ctx.moveTo(padding, y);
@@ -80,20 +108,26 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 5行ごと、5列ごとの太線
-    ctx.strokeStyle = '#d49090';
+    // 2. 5行・5列ごとの太い実線
+    ctx.strokeStyle = '#509050';
     ctx.lineWidth = 1.2;
+    ctx.setLineDash([]); // 実線に戻す
 
-    // 縦線（5列ごと）
-    for (let col = 5; col < config.cols; col += 5) {
-      const x = padding + col * cellSize;
-      ctx.beginPath();
-      ctx.moveTo(x, padding);
-      ctx.lineTo(x, height - padding);
-      ctx.stroke();
-    }
+    // 左側5列目の縦線
+    const leftCol5 = padding + 5 * cellSize;
+    ctx.beginPath();
+    ctx.moveTo(leftCol5, padding);
+    ctx.lineTo(leftCol5, height - padding);
+    ctx.stroke();
+    
+    // 右側5列目の縦線
+    const rightCol5 = rightSectionStart + 5 * cellSize;
+    ctx.beginPath();
+    ctx.moveTo(rightCol5, padding);
+    ctx.lineTo(rightCol5, height - padding);
+    ctx.stroke();
 
-    // 横線（5行ごと）
+    // 横線（5行ごと・実線）
     for (let row = 5; row < config.rows; row += 5) {
       const y = padding + row * cellSize;
       ctx.beginPath();
@@ -102,39 +136,51 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 外枠を太く
-    ctx.strokeStyle = '#c07070';
+    // 3. 外枠を太く（濃い緑）
+    ctx.strokeStyle = '#407040';
     ctx.lineWidth = 2.5;
-    ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
+    ctx.strokeRect(padding, padding, width - padding * 2, height - padding * 2);
 
-    // 魚尾（ぎょび）- 中央の縦線と装飾
-    const centerCol = Math.floor(config.cols / 2); // 10
-    const centerX = padding + centerCol * cellSize;
+    // 4. 魚尾（ぎょび）- 中央の細い列
     const topY = padding;
-    const bottomY = padding + config.rows * cellSize;
-    const middleY = padding + (config.rows / 2) * cellSize;
+    const bottomY = height - padding;
     
-    ctx.strokeStyle = '#c07070';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#407040';
+    ctx.lineWidth = 2.0;
     
-    // 中央の縦線（上端から下端まで）
+    // 魚尾列の左右の境界線（実線）
     ctx.beginPath();
-    ctx.moveTo(centerX, topY);
-    ctx.lineTo(centerX, bottomY);
+    ctx.moveTo(gyobiStart, topY);
+    ctx.lineTo(gyobiStart, bottomY);
     ctx.stroke();
     
-    // 中央の装飾（◎マーク）
-    ctx.strokeStyle = '#c07070';
-    ctx.lineWidth = 1.2;
-    
-    // 外側の円
     ctx.beginPath();
-    ctx.arc(centerX, middleY, cellSize * 0.3, 0, Math.PI * 2);
+    ctx.moveTo(gyobiEnd, topY);
+    ctx.lineTo(gyobiEnd, bottomY);
     ctx.stroke();
     
-    // 内側の円
+    // 上部のカギ型マーク（魚尾上部）
+    const upperY = padding + 4 * cellSize; // 4行目と5行目の間
+    ctx.strokeStyle = '#407040';
+    ctx.lineWidth = 2.0;
     ctx.beginPath();
-    ctx.arc(centerX, middleY, cellSize * 0.15, 0, Math.PI * 2);
+    ctx.moveTo(gyobiStart, upperY);
+    ctx.lineTo(gyobiStart - cellSize * 0.3, upperY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(gyobiEnd, upperY);
+    ctx.lineTo(gyobiEnd + cellSize * 0.3, upperY);
+    ctx.stroke();
+    
+    // 下部のカギ型マーク（魚尾下部）
+    const lowerY = padding + 15 * cellSize; // 15行目と16行目の間
+    ctx.beginPath();
+    ctx.moveTo(gyobiStart, lowerY);
+    ctx.lineTo(gyobiStart - cellSize * 0.3, lowerY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(gyobiEnd, lowerY);
+    ctx.lineTo(gyobiEnd + cellSize * 0.3, lowerY);
     ctx.stroke();
 
     // このページの文字を取得
@@ -143,6 +189,7 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     const pageChars = chars.slice(startIndex, endIndex).split('');
 
     // 文字を配置（縦書き：右から左、上から下）
+    // 魚尾付き原稿用紙：右側10列 → 左側10列の順
     ctx.fillStyle = '#1a1a1a';
     ctx.font = `${cellSize * 0.70}px "Noto Serif JP", "游明朝", "YuMincho", "Hiragino Mincho ProN", "HG明朝E", "serif"`;
     ctx.textAlign = 'center';
@@ -150,12 +197,25 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
 
     let charIndex = 0;
 
-    // 右から左へ列を進む
-    for (let col = config.cols - 1; col >= 0 && charIndex < pageChars.length; col--) {
+    // X座標を計算する関数（右側10列: colIndex 0-9、左側10列: colIndex 10-19）
+    const getXPosition = (colIndex: number): number => {
+      if (colIndex < halfCols) {
+        // 右側10列（右端から中央方向へ: 列9, 8, 7, ... 0）
+        const rightColIndex = halfCols - 1 - colIndex;
+        return rightSectionStart + rightColIndex * cellSize + cellSize / 2;
+      } else {
+        // 左側10列（魚尾の左から左端方向へ: 列9, 8, 7, ... 0）
+        const leftColIndex = halfCols - 1 - (colIndex - halfCols);
+        return padding + leftColIndex * cellSize + cellSize / 2;
+      }
+    };
+
+    // 全20列を順番に処理（右側10列 → 左側10列）
+    for (let colIndex = 0; colIndex < textCols && charIndex < pageChars.length; colIndex++) {
       // 上から下へ行を進む
       for (let row = 0; row < config.rows && charIndex < pageChars.length; row++) {
         const char = pageChars[charIndex];
-        const x = padding + col * cellSize + cellSize / 2;
+        const x = getXPosition(colIndex);
         const y = padding + row * cellSize + cellSize / 2;
 
         // 句読点の位置調整（右上に配置）
@@ -320,14 +380,13 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
         {chars.length > 0 ? (
           <div
             ref={containerRef}
-            className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8 rounded-lg"
+            className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8 rounded-lg overflow-x-auto"
           >
             <div 
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12 justify-items-center"
-              style={{ direction: 'rtl' }}
+              className="flex gap-12 flex-row-reverse justify-center flex-wrap"
             >
               {Array.from({ length: totalPages }, (_, i) => (
-                <div key={i} style={{ direction: 'ltr' }}>
+                <div key={i}>
                   <canvas
                     ref={el => {
                       canvasRefs.current[i] = el;
