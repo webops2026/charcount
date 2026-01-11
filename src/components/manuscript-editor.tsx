@@ -144,43 +144,47 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     // 4. 魚尾（ぎょび）- 中央の細い列
     const topY = padding;
     const bottomY = height - padding;
+    const gyobiCenterX = gyobiStart + gyobiWidth / 2;
     
     ctx.strokeStyle = '#407040';
-    ctx.lineWidth = 2.0;
+    ctx.lineWidth = 1.5;
     
-    // 魚尾列の左右の境界線（実線）
+    // 上部の凹み位置（4-5行目の間あたり）
+    const upperNotchY = padding + 4.5 * cellSize;
+    const upperNotchRadius = gyobiWidth / 2; // 魚尾幅の半分を半径として使用
+    
+    // 下部の凹み位置（15-16行目の間あたり）
+    const lowerNotchY = padding + 15.5 * cellSize;
+    const lowerNotchRadius = gyobiWidth / 2;
+    
+    // 左側の境界線（凹みを含む）
     ctx.beginPath();
+    // 上端から上部凹みの開始まで
     ctx.moveTo(gyobiStart, topY);
+    ctx.lineTo(gyobiStart, upperNotchY - upperNotchRadius);
+    // 上部の凹み（右向きの弧）
+    ctx.arc(gyobiCenterX, upperNotchY, upperNotchRadius, Math.PI, 0, false);
+    // 上部凹みの終わりから下部凹みの開始まで
+    ctx.lineTo(gyobiStart, lowerNotchY - lowerNotchRadius);
+    // 下部の凹み（右向きの弧）
+    ctx.arc(gyobiCenterX, lowerNotchY, lowerNotchRadius, Math.PI, 0, false);
+    // 下部凹みの終わりから下端まで
     ctx.lineTo(gyobiStart, bottomY);
     ctx.stroke();
     
+    // 右側の境界線（凹みを含む）
     ctx.beginPath();
+    // 上端から上部凹みの開始まで
     ctx.moveTo(gyobiEnd, topY);
+    ctx.lineTo(gyobiEnd, upperNotchY - upperNotchRadius);
+    // 上部の凹み（左向きの弧）
+    ctx.arc(gyobiCenterX, upperNotchY, upperNotchRadius, 0, Math.PI, false);
+    // 上部凹みの終わりから下部凹みの開始まで
+    ctx.lineTo(gyobiEnd, lowerNotchY - lowerNotchRadius);
+    // 下部の凹み（左向きの弧）
+    ctx.arc(gyobiCenterX, lowerNotchY, lowerNotchRadius, 0, Math.PI, false);
+    // 下部凹みの終わりから下端まで
     ctx.lineTo(gyobiEnd, bottomY);
-    ctx.stroke();
-    
-    // 上部のカギ型マーク（魚尾上部）
-    const upperY = padding + 4 * cellSize; // 4行目と5行目の間
-    ctx.strokeStyle = '#407040';
-    ctx.lineWidth = 2.0;
-    ctx.beginPath();
-    ctx.moveTo(gyobiStart, upperY);
-    ctx.lineTo(gyobiStart - cellSize * 0.3, upperY);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(gyobiEnd, upperY);
-    ctx.lineTo(gyobiEnd + cellSize * 0.3, upperY);
-    ctx.stroke();
-    
-    // 下部のカギ型マーク（魚尾下部）
-    const lowerY = padding + 15 * cellSize; // 15行目と16行目の間
-    ctx.beginPath();
-    ctx.moveTo(gyobiStart, lowerY);
-    ctx.lineTo(gyobiStart - cellSize * 0.3, lowerY);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(gyobiEnd, lowerY);
-    ctx.lineTo(gyobiEnd + cellSize * 0.3, lowerY);
     ctx.stroke();
 
     // このページの文字を取得
