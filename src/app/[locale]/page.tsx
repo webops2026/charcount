@@ -33,7 +33,7 @@ export default function Home() {
         <CharacterCounter text={text} onTextChange={setText} />
         
         {/* 原稿用紙エディタ（日本語のみ表示） */}
-        {locale === "ja" && (
+        {locale === "ja" && text.length > 0 && (
           <>
             <Separator className="my-8" />
             <ManuscriptEditor text={text} onTextChange={setText} />
