@@ -52,13 +52,13 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
 
     ctx.scale(scale, scale);
 
-    // 背景（薄いクリーム色）
-    ctx.fillStyle = '#fffef8';
+    // 背景（白）
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
 
-    // グリッド線を描画（明確なピンク色）
-    ctx.strokeStyle = '#e4a8a0';
-    ctx.lineWidth = 1.0;
+    // グリッド線を描画（薄いグレー）
+    ctx.strokeStyle = '#cccccc';
+    ctx.lineWidth = 0.5;
 
     // 縦線（列）
     for (let col = 0; col <= config.cols; col++) {
@@ -78,20 +78,9 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 5行ごとに太線
-    ctx.strokeStyle = '#d4887f';
-    ctx.lineWidth = 2.0;
-    for (let row = 0; row <= config.rows; row += 5) {
-      const y = padding + row * cellSize;
-      ctx.beginPath();
-      ctx.moveTo(padding, y);
-      ctx.lineTo(width - padding, y);
-      ctx.stroke();
-    }
-
-    // 外枠を太く（より目立つように）
-    ctx.strokeStyle = '#b85850';
-    ctx.lineWidth = 4;
+    // 外枠を太く
+    ctx.strokeStyle = '#999999';
+    ctx.lineWidth = 2;
     ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
 
     // このページの文字を取得
@@ -280,19 +269,20 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
             className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8 rounded-lg"
           >
             <div 
-              className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-items-center"
+              className="grid grid-cols-1 lg:grid-cols-2 gap-12 justify-items-center"
               style={{ direction: 'rtl' }}
             >
               {Array.from({ length: totalPages }, (_, i) => (
-                <div key={i} className="w-fit" style={{ direction: 'ltr' }}>
+                <div key={i} style={{ direction: 'ltr' }}>
                   <canvas
                     ref={el => {
                       canvasRefs.current[i] = el;
                     }}
-                    className="shadow-2xl rounded-sm"
+                    className="shadow-lg rounded-sm"
                     style={{ 
                       imageRendering: 'crisp-edges',
-                      backgroundColor: '#fffef8'
+                      backgroundColor: '#ffffff',
+                      display: 'block'
                     }}
                   />
                 </div>
