@@ -84,21 +84,22 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
 
     // 中央マーク（◎）- 原稿用紙の標準デザイン
-    const centerCol = Math.floor(config.cols / 2);
-    const centerRow = Math.floor(config.rows / 2);
-    const centerX = padding + centerCol * cellSize;
-    const centerY = padding + centerRow * cellSize;
+    // 400字詰めの場合: 右から10列目と11列目の境界線、上から10行目と11行目の境界線の交点
+    const centerCol = Math.floor(config.cols / 2); // 10
+    const centerRow = Math.floor(config.rows / 2); // 10
+    const centerX = padding + centerCol * cellSize; // 列の境界線上
+    const centerY = padding + centerRow * cellSize; // 行の境界線上
     
     // 外側の円
     ctx.strokeStyle = '#999999';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(centerX, centerY, cellSize * 0.35, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, cellSize * 0.25, 0, Math.PI * 2); // 半径を小さく
     ctx.stroke();
     
     // 内側の円
     ctx.beginPath();
-    ctx.arc(centerX, centerY, cellSize * 0.15, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, cellSize * 0.12, 0, Math.PI * 2); // 半径を小さく
     ctx.stroke();
 
     // このページの文字を取得
