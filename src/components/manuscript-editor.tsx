@@ -199,7 +199,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     // 文字を配置（縦書き：右から左、上から下）
     // 魚尾付き原稿用紙：右側10列 → 左側10列の順
     ctx.fillStyle = '#1a1a1a';
-    ctx.font = `${cellSize * 0.70}px "Noto Serif JP", "游明朝", "YuMincho", "Hiragino Mincho ProN", "HG明朝E", "serif"`;
+    // 文字サイズを大きくして（85%）、よりはっきりと表示
+    ctx.font = `500 ${cellSize * 0.85}px "Noto Serif JP", "游明朝", "YuMincho", "Hiragino Mincho ProN", "HG明朝E", "serif"`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -256,8 +257,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
         else if (['ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'っ', 'ゎ', 'ャ', 'ュ', 'ョ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ッ', 'ヮ'].includes(char)) {
           ctx.save();
           ctx.translate(x, y);
-          ctx.font = `${cellSize * 0.55}px "Noto Serif JP", "游明朝", "YuMincho", "Hiragino Mincho ProN", "serif"`;
-          ctx.fillText(char, cellSize * 0.08, cellSize * 0.08);
+          ctx.font = `500 ${cellSize * 0.65}px "Noto Serif JP", "游明朝", "YuMincho", "Hiragino Mincho ProN", "serif"`;
+          ctx.fillText(char, cellSize * 0.1, cellSize * 0.1);
           ctx.restore();
         }
         // 長音記号（縦書き用に回転）
