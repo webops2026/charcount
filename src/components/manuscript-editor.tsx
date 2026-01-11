@@ -281,7 +281,9 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
               {Array.from({ length: totalPages }, (_, i) => (
                 <div key={i} className="flex-shrink-0">
                   <canvas
-                    ref={el => canvasRefs.current[i] = el}
+                    ref={el => {
+                      canvasRefs.current[i] = el;
+                    }}
                     className="shadow-2xl rounded-sm"
                     style={{ 
                       imageRendering: 'crisp-edges',
