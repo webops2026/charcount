@@ -1,0 +1,84 @@
+{
+  "metadata": {
+    "title": "CharCount Tools - Character & Word Counter",
+    "description": "Free character counter tool. Real-time character count, word count, and reading time. Includes word count target system and SNS character check."
+  },
+  "common": {
+    "title": "CharCount Tools",
+    "subtitle": "Detailed Text Analysis Tool",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "language": "Language"
+  },
+  "counter": {
+    "placeholder": "Type or paste your text here...",
+    "clear": "Clear",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "stats": {
+      "characters": "Characters",
+      "charactersNoSpace": "Characters (no spaces)",
+      "words": "Words",
+      "sentences": "Sentences",
+      "paragraphs": "Paragraphs",
+      "lines": "Lines",
+      "bytes": "Bytes"
+    },
+    "time": {
+      "title": "Estimated Time",
+      "reading": "Reading Time",
+      "speaking": "Speaking Time",
+      "typing": "Typing Time"
+    },
+    "charTypes": {
+      "title": "Character Types",
+      "hiragana": "Hiragana",
+      "katakana": "Katakana",
+      "kanji": "Kanji",
+      "alphabet": "Letters",
+      "numbers": "Numbers",
+      "symbols": "Symbols",
+      "spaces": "Spaces"
+    },
+    "quality": {
+      "title": "Quality Score",
+      "readability": "Readability",
+      "complexity": "Complexity",
+      "diversity": "Vocabulary Diversity"
+    },
+    "keywords": {
+      "title": "Top 5 Keywords",
+      "count": "times",
+      "percentage": "%"
+    },
+    "sns": {
+      "title": "SNS Check",
+      "remaining": "{count} characters remaining",
+      "over": "{count} characters over",
+      "showAll": "Show all SNS"
+    },
+    "manuscript": {
+      "title": "Manuscript Pages",
+      "pages": "pages",
+      "size200": "200-char paper",
+      "size400": "400-char paper",
+      "size800": "800-char paper",
+      "bunko": "Bunko pages",
+      "shinsho": "Shinsho pages"
+    }
+  },
+  "target": {
+    "title": "Word Count Target",
+    "current": "Current",
+    "goal": "Goal",
+    "remaining": "{count} to go",
+    "achieved": "Goal achieved!",
+    "over": "{count} over"
+  },
+  "footer": {
+    "copyright": "© 2026 CharCount Tools. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "metadata": {
+    "title": "CharCount Tools - 文字数カウントツール",
+    "description": "無料の文字数カウントツール。リアルタイムで文字数、単語数、読了時間を計測。原稿用紙機能、SNS文字数チェック対応。"
+  },
+  "common": {
+    "title": "CharCount Tools",
+    "subtitle": "詳細なテキスト分析ツール",
+    "darkMode": "ダークモード",
+    "lightMode": "ライトモード",
+    "language": "言語"
+  },
+  "counter": {
+    "placeholder": "ここにテキストを入力してください...",
+    "clear": "クリア",
+    "copy": "コピー",
+    "copied": "コピーしました！",
+    "stats": {
+      "characters": "文字数",
+      "charactersNoSpace": "文字数（空白除く）",
+      "words": "単語数",
+      "sentences": "文数",
+      "paragraphs": "段落数",
+      "lines": "行数",
+      "bytes": "バイト数"
+    },
+    "time": {
+      "title": "推定時間",
+      "reading": "読了時間",
+      "speaking": "音読時間",
+      "typing": "入力時間"
+    },
+    "charTypes": {
+      "title": "文字種別",
+      "hiragana": "ひらがな",
+      "katakana": "カタカナ",
+      "kanji": "漢字",
+      "alphabet": "英字",
+      "numbers": "数字",
+      "symbols": "記号",
+      "spaces": "空白"
+    },
+    "quality": {
+      "title": "品質スコア",
+      "readability": "読みやすさ",
+      "complexity": "複雑度",
+      "diversity": "語彙の多様性"
+    },
+    "keywords": {
+      "title": "キーワード頻度 TOP5",
+      "count": "回",
+      "percentage": "%"
+    },
+    "sns": {
+      "title": "SNSチェック",
+      "remaining": "あと{count}文字",
+      "over": "{count}文字オーバー",
+      "showAll": "全SNSを表示"
+    },
+    "manuscript": {
+      "title": "原稿用紙換算",
+      "pages": "枚",
+      "size200": "200字詰め",
+      "size400": "400字詰め",
+      "size800": "800字詰め",
+      "bunko": "文庫本ページ",
+      "shinsho": "新書ページ"
+    }
+  },
+  "target": {
+    "title": "目標設定",
+    "current": "現在",
+    "goal": "目標",
+    "remaining": "あと{count}",
+    "achieved": "目標達成！",
+    "over": "{count}オーバー"
+  },
+  "footer": {
+    "copyright": "© 2026 CharCount Tools. All rights reserved.",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "contact": "お問い合わせ"
+  }
+}
