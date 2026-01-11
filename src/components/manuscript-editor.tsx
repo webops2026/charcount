@@ -83,6 +83,24 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.lineWidth = 2;
     ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
 
+    // 中央マーク（◎）- 原稿用紙の標準デザイン
+    const centerCol = Math.floor(config.cols / 2);
+    const centerRow = Math.floor(config.rows / 2);
+    const centerX = padding + centerCol * cellSize;
+    const centerY = padding + centerRow * cellSize;
+    
+    // 外側の円
+    ctx.strokeStyle = '#999999';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, cellSize * 0.35, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // 内側の円
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, cellSize * 0.15, 0, Math.PI * 2);
+    ctx.stroke();
+
     // このページの文字を取得
     const startIndex = pageIndex * config.charsPerPage;
     const endIndex = Math.min(startIndex + config.charsPerPage, chars.length);
