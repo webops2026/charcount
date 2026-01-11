@@ -10,7 +10,8 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 
 interface ManuscriptEditorProps {
-  initialText?: string;
+  text: string;
+  onTextChange: (text: string) => void;
 }
 
 type PaperSize = '200' | '400' | '800';
@@ -21,9 +22,8 @@ const paperConfigs = {
   '800': { rows: 40, cols: 20, name: '800字詰め' },
 };
 
-export function ManuscriptEditor({ initialText = '' }: ManuscriptEditorProps) {
+export function ManuscriptEditor({ text, onTextChange }: ManuscriptEditorProps) {
   const t = useTranslations('counter');
-  const [text, setText] = useState(initialText);
   const [paperSize, setPaperSize] = useState<PaperSize>('400');
   const [zoom, setZoom] = useState(1);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -200,7 +200,7 @@ export function ManuscriptEditor({ initialText = '' }: ManuscriptEditorProps) {
             <label className="text-sm font-medium">テキスト入力</label>
             <Textarea
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => onTextChange(e.target.value)}
               placeholder="ここに文章を入力すると、右の原稿用紙にリアルタイムで反映されます..."
               className="min-h-[300px] font-mono"
             />
@@ -208,7 +208,7 @@ export function ManuscriptEditor({ initialText = '' }: ManuscriptEditorProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setText('')}
+                onClick={() => onTextChange('')}
               >
                 <RotateCcw className="h-4 w-4 mr-1" />
                 クリア

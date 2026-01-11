@@ -12,30 +12,23 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { analyzeText, checkSNS, formatTime, formatTimeEn, type TextStats, type SNSCheck } from '@/lib/text-analysis';
 
-export function CharacterCounter() {
+interface CharacterCounterProps {
+  text: string;
+  onTextChange: (text: string) => void;
+}
+
+export function CharacterCounter({ text, onTextChange }: CharacterCounterProps) {
   const t = useTranslations('counter');
   const locale = useLocale();
-  const [text, setText] = useState('');
   const [stats, setStats] = useState<TextStats | null>(null);
   const [snsChecks, setSnsChecks] = useState<SNSCheck[]>([]);
   const [copied, setCopied] = useState(false);
-
-  // ローカルストレージから復元
-  useEffect(() => {
-    const saved = localStorage.getItem('charcount-text');
-    if (saved) {
-      setText(saved);
-    }
-  }, []);
 
   // テキスト変更時に分析を実行
   useEffect(() => {
     const analyzed = analyzeText(text);
     setStats(analyzed);
     setSnsChecks(checkSNS(text));
-    
-    // ローカルストレージに保存
-    localStorage.setItem('charcount-text', text);
   }, [text]);
 
   const handleCopy = useCallback(async () => {
@@ -45,9 +38,8 @@ export function CharacterCounter() {
   }, [text]);
 
   const handleClear = useCallback(() => {
-    setText('');
-    localStorage.removeItem('charcount-text');
-  }, []);
+    onTextChange('');
+  }, [onTextChange]);
 
   const formatTimeLocale = locale === 'ja' ? formatTime : formatTimeEn;
 
@@ -72,7 +64,7 @@ export function CharacterCounter() {
             <Textarea
               placeholder={t('placeholder')}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => onTextChange(e.target.value)}
               className="min-h-[200px] md:min-h-[300px] text-base resize-y font-mono"
             />
             <div className="absolute bottom-3 right-3 flex gap-2">
