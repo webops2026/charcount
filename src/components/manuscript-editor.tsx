@@ -273,15 +273,18 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
           </TabsList>
         </Tabs>
 
-        {/* 原稿用紙プレビュー（横スクロール） */}
+        {/* 原稿用紙プレビュー（レスポンシブグリッド・右から左） */}
         {chars.length > 0 ? (
           <div
             ref={containerRef}
-            className="overflow-x-auto bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8 rounded-lg"
+            className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8 rounded-lg"
           >
-            <div className="flex gap-8 w-max">
+            <div 
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-items-center"
+              style={{ direction: 'rtl' }}
+            >
               {Array.from({ length: totalPages }, (_, i) => (
-                <div key={i} className="flex-shrink-0">
+                <div key={i} className="w-fit" style={{ direction: 'ltr' }}>
                   <canvas
                     ref={el => {
                       canvasRefs.current[i] = el;
