@@ -40,15 +40,19 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
 
     // キャンバスサイズ設定（高解像度対応）
     // 魚尾付き原稿用紙: 横21列（左10列 + 魚尾1列 + 右10列）× 縦20行
+    // さらに各列の間にルビ用の細い列を追加
     const scale = 2;
-    const cellSize = 40; // サイズ感を調整（少し大きく）
-    const gyobiWidth = cellSize * 1.1; // 魚尾列の幅を調整（1.1倍）
-    const padding = 70; // 余白を調整
+    const cellSize = 40; // 文字マスのサイズ
+    const gapWidth = cellSize * 0.25; // ルビ列（列間の小さい列）の幅
+    const gyobiWidth = cellSize * 1.1; // 魚尾列の幅
+    const padding = 70; // 余白
     
-    // 幅 = 左10列 + 魚尾列 + 右10列
-    const textCols = config.cols; // 文字用の列数（20列）
-    const halfCols = textCols / 2; // 片側の列数（10列）
-    const width = textCols * cellSize + gyobiWidth + padding * 2;
+    // 片側の幅 = 10列分のセル + 9列分のギャップ（列間）
+    const halfCols = config.cols / 2; // 10
+    const sectionWidth = halfCols * cellSize + (halfCols - 1) * gapWidth;
+    
+    // 全体幅 = 左セクション + 魚尾 + 右セクション + 余白
+    const width = sectionWidth * 2 + gyobiWidth + padding * 2;
     const height = config.rows * cellSize + padding * 2;
 
     canvas.width = width * scale;
@@ -62,41 +66,42 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
 
-    // グリッド線を描画（あずき色/赤茶色 - 画像の色に合わせる）
-    const lineColor = '#c07070'; // 基本の色
+    // グリッド線を描画（あずき色/赤茶色）
+    const lineColor = '#c07070';
     
-    // 計算用の位置
-    const leftSectionEnd = padding + halfCols * cellSize; // 左側10列の終わり
-    const gyobiStart = leftSectionEnd; // 魚尾列の開始
-    const gyobiEnd = leftSectionEnd + gyobiWidth; // 魚尾列の終了
-    const rightSectionStart = gyobiEnd; // 右側10列の開始
+    // 計算用の開始位置
+    const leftSectionStart = padding;
+    const rightSectionStart = padding + sectionWidth + gyobiWidth;
     
     // 1. 通常のグリッド線（実線・細め）
-    ctx.strokeStyle = '#e0a0a0'; // 少し薄く
-    ctx.lineWidth = 0.6; // 細く
-    ctx.setLineDash([]); // 実線
+    ctx.strokeStyle = '#e0a0a0'; 
+    ctx.lineWidth = 0.6;
+    ctx.setLineDash([]); 
+
+    // ヘルパー関数: 指定セクションの縦線を描画
+    const drawSectionVerticalLines = (startX: number) => {
+      for (let i = 0; i < halfCols; i++) {
+        const colX = startX + i * (cellSize + gapWidth);
+        const rightX = colX + cellSize;
+
+        // セルの左端線
+        ctx.beginPath();
+        ctx.moveTo(colX, padding);
+        ctx.lineTo(colX, height - padding);
+        ctx.stroke();
+        
+        // セルの右端線
+        ctx.beginPath();
+        ctx.moveTo(rightX, padding);
+        ctx.lineTo(rightX, height - padding);
+        ctx.stroke();
+      }
+    };
+
+    drawSectionVerticalLines(leftSectionStart);
+    drawSectionVerticalLines(rightSectionStart);
     
-    // 左側の縦線
-    for (let col = 1; col < halfCols; col++) {
-      if (col === 5) continue;
-      const x = padding + col * cellSize;
-      ctx.beginPath();
-      ctx.moveTo(x, padding);
-      ctx.lineTo(x, height - padding);
-      ctx.stroke();
-    }
-    
-    // 右側の縦線
-    for (let col = 1; col < halfCols; col++) {
-      if (col === 5) continue;
-      const x = rightSectionStart + col * cellSize;
-      ctx.beginPath();
-      ctx.moveTo(x, padding);
-      ctx.lineTo(x, height - padding);
-      ctx.stroke();
-    }
-    
-    // 横線
+    // 横線（全体に通すことで、ギャップ部分に小さいマスができる）
     for (let row = 1; row < config.rows; row++) {
       if (row % 5 === 0) continue;
       const y = padding + row * cellSize;
@@ -108,20 +113,21 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
 
     // 2. 5行・5列ごとの中太線
     ctx.strokeStyle = lineColor;
-    ctx.lineWidth = 1.0; // 少し太く
+    ctx.lineWidth = 1.0;
 
-    // 左側5列目の縦線
-    const leftCol5 = padding + 5 * cellSize;
+    // 縦の太線（5列区切り）
+    // 左セクションの5列目の右側（全体で15列目の左側境界）
+    const leftCol5X = leftSectionStart + 4 * (cellSize + gapWidth) + cellSize;
     ctx.beginPath();
-    ctx.moveTo(leftCol5, padding);
-    ctx.lineTo(leftCol5, height - padding);
+    ctx.moveTo(leftCol5X, padding);
+    ctx.lineTo(leftCol5X, height - padding);
     ctx.stroke();
     
-    // 右側5列目の縦線
-    const rightCol5 = rightSectionStart + 5 * cellSize;
+    // 右セクションの5列目の右側（全体で5列目の左側境界）
+    const rightCol5X = rightSectionStart + 4 * (cellSize + gapWidth) + cellSize;
     ctx.beginPath();
-    ctx.moveTo(rightCol5, padding);
-    ctx.lineTo(rightCol5, height - padding);
+    ctx.moveTo(rightCol5X, padding);
+    ctx.lineTo(rightCol5X, height - padding);
     ctx.stroke();
 
     // 横線（5行ごと）
@@ -133,40 +139,42 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 3. 外枠を極太に（画像の特徴）
+    // 3. 外枠を極太に
     ctx.strokeStyle = lineColor;
-    ctx.lineWidth = 4.0; // かなり太く
+    ctx.lineWidth = 4.0;
     ctx.strokeRect(padding, padding, width - padding * 2, height - padding * 2);
 
-    // 4. 魚尾（ぎょび）- 中央の列
+    // 4. 魚尾（ぎょび）
     const topY = padding;
     const bottomY = height - padding;
-    const gyobiCenterX = gyobiStart + gyobiWidth / 2;
+    const gyobiStartX = leftSectionStart + sectionWidth;
+    const gyobiEndX = gyobiStartX + gyobiWidth;
+    const gyobiCenterX = gyobiStartX + gyobiWidth / 2;
     
     // 魚尾列の左右の縦線（中太）
     ctx.strokeStyle = lineColor;
-    ctx.lineWidth = 1.5; // 外枠よりは細く、グリッドより太く
+    ctx.lineWidth = 1.5;
     
     ctx.beginPath();
-    ctx.moveTo(gyobiStart, topY);
-    ctx.lineTo(gyobiStart, bottomY);
+    ctx.moveTo(gyobiStartX, topY);
+    ctx.lineTo(gyobiStartX, bottomY);
     ctx.stroke();
     
     ctx.beginPath();
-    ctx.moveTo(gyobiEnd, topY);
-    ctx.lineTo(gyobiEnd, bottomY);
+    ctx.moveTo(gyobiEndX, topY);
+    ctx.lineTo(gyobiEndX, bottomY);
     ctx.stroke();
     
     // 魚尾マーク（極太）
-    ctx.lineWidth = 4.0; // 外枠と同じくらい太く
-    ctx.lineCap = 'round'; // 端を丸くして柔らかさを出す
+    ctx.lineWidth = 4.0;
+    ctx.lineCap = 'round';
     
     // 上部の魚尾マーク（アーチ型 ⌒）
-    const upperY = padding + 4 * cellSize; // 4行目の下
-    const markWidth = gyobiWidth * 0.8; // 列幅の80%
+    const upperY = padding + 4 * cellSize;
+    const markWidth = gyobiWidth * 0.8;
     const markLeft = gyobiCenterX - markWidth / 2;
     const markRight = gyobiCenterX + markWidth / 2;
-    const archHeight = cellSize * 0.15; // アーチの高さ
+    const archHeight = cellSize * 0.15;
     
     ctx.beginPath();
     ctx.moveTo(markLeft, upperY + archHeight);
@@ -174,14 +182,14 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.stroke();
     
     // 下部の魚尾マーク（横線 ー）
-    const lowerY = padding + 15 * cellSize; // 15行目の下
+    const lowerY = padding + 15 * cellSize;
     
     ctx.beginPath();
     ctx.moveTo(markLeft, lowerY);
     ctx.lineTo(markRight, lowerY);
     ctx.stroke();
     
-    ctx.lineCap = 'butt'; // 設定を戻す
+    ctx.lineCap = 'butt';
 
     // このページの文字を取得
     const startIndex = pageIndex * config.charsPerPage;
@@ -201,12 +209,17 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     const getXPosition = (colIndex: number): number => {
       if (colIndex < halfCols) {
         // 右側10列（右端から中央方向へ: 列9, 8, 7, ... 0）
-        const rightColIndex = halfCols - 1 - colIndex;
-        return rightSectionStart + rightColIndex * cellSize + cellSize / 2;
+        // colIndex 0 は一番右の列
+        // 右セクションの右端から、colIndex番目の列の位置を計算
+        // 右セクションの並び: [col 9] gap [col 8] ... gap [col 0]
+        const localIndex = (halfCols - 1) - colIndex; // 0 -> 9 (左端), 9 -> 0 (右端)
+        // 右セクション開始位置 + (localIndex * (cell + gap)) + cell/2
+        return rightSectionStart + localIndex * (cellSize + gapWidth) + cellSize / 2;
       } else {
         // 左側10列（魚尾の左から左端方向へ: 列9, 8, 7, ... 0）
-        const leftColIndex = halfCols - 1 - (colIndex - halfCols);
-        return padding + leftColIndex * cellSize + cellSize / 2;
+        // colIndex 10 は魚尾のすぐ左
+        const localIndex = (halfCols - 1) - (colIndex - halfCols); // 10 -> 9 (右端), 19 -> 0 (左端)
+        return leftSectionStart + localIndex * (cellSize + gapWidth) + cellSize / 2;
       }
     };
 
