@@ -40,8 +40,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
 
     // キャンバスサイズ設定（高解像度対応）
     const scale = 2;
-    const cellSize = 32;
-    const padding = 60;
+    const cellSize = 38; // より大きく見やすく
+    const padding = 80; // 余白を広く
     const width = config.cols * cellSize + padding * 2;
     const height = config.rows * cellSize + padding * 2;
 
@@ -56,9 +56,9 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.fillStyle = '#fffef8';
     ctx.fillRect(0, 0, width, height);
 
-    // グリッド線を描画（淡いピンク色）
-    ctx.strokeStyle = '#f0b8b1';
-    ctx.lineWidth = 0.8;
+    // グリッド線を描画（明確なピンク色）
+    ctx.strokeStyle = '#e4a8a0';
+    ctx.lineWidth = 1.0;
 
     // 縦線（列）
     for (let col = 0; col <= config.cols; col++) {
@@ -79,8 +79,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     }
 
     // 5行ごとに太線
-    ctx.strokeStyle = '#e08a81';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#d4887f';
+    ctx.lineWidth = 2.0;
     for (let row = 0; row <= config.rows; row += 5) {
       const y = padding + row * cellSize;
       ctx.beginPath();
@@ -89,9 +89,9 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 外枠を太く
-    ctx.strokeStyle = '#c56f68';
-    ctx.lineWidth = 3;
+    // 外枠を太く（より目立つように）
+    ctx.strokeStyle = '#b85850';
+    ctx.lineWidth = 4;
     ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
 
     // このページの文字を取得
@@ -100,8 +100,8 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     const pageChars = chars.slice(startIndex, endIndex).split('');
 
     // 文字を配置（縦書き：右から左、上から下）
-    ctx.fillStyle = '#222';
-    ctx.font = `${cellSize * 0.65}px "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif`;
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = `${cellSize * 0.70}px "Noto Serif JP", "游明朝", "YuMincho", "Hiragino Mincho ProN", "HG明朝E", "serif"`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -140,7 +140,7 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
         else if (['ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'っ', 'ゎ', 'ャ', 'ュ', 'ョ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ッ', 'ヮ'].includes(char)) {
           ctx.save();
           ctx.translate(x, y);
-          ctx.font = `${cellSize * 0.5}px "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif`;
+          ctx.font = `${cellSize * 0.55}px "Noto Serif JP", "游明朝", "YuMincho", "Hiragino Mincho ProN", "serif"`;
           ctx.fillText(char, cellSize * 0.08, cellSize * 0.08);
           ctx.restore();
         }
@@ -161,11 +161,13 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       }
     }
 
-    // ページ番号（右下）
-    ctx.fillStyle = '#999';
-    ctx.font = `${14}px sans-serif`;
-    ctx.textAlign = 'right';
-    ctx.fillText(`${pageIndex + 1} / ${totalPages}`, width - padding + 50, height - 20);
+    // ページ番号（右下外側）
+    if (totalPages > 1) {
+      ctx.fillStyle = '#666';
+      ctx.font = `${16}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(`${pageIndex + 1} / ${totalPages}`, width / 2, height - 25);
+    }
   }, [config, chars, totalPages]);
 
   useEffect(() => {
@@ -295,9 +297,10 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
             </div>
           </div>
         ) : (
-          <div className="text-center py-16 text-muted-foreground bg-muted/30 rounded-lg">
-            <p className="text-lg">テキストを入力すると、原稿用紙が表示されます</p>
-            <p className="text-sm mt-2">上のテキストエリアに文章を入力してください</p>
+          <div className="text-center py-20 text-muted-foreground bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg">
+            <div className="text-6xl mb-4">📝</div>
+            <p className="text-lg font-medium">原稿用紙プレビュー</p>
+            <p className="text-sm mt-2">上のテキストエリアに文章を入力すると、ここに原稿用紙形式で表示されます</p>
           </div>
         )}
       </CardContent>
