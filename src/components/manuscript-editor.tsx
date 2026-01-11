@@ -56,8 +56,9 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
 
-    // グリッド線を描画（薄いグレー）
-    ctx.strokeStyle = '#cccccc';
+    // グリッド線を描画
+    // 1. 通常の細い線（全体）
+    ctx.strokeStyle = '#e0e0e0';
     ctx.lineWidth = 0.5;
 
     // 縦線（列）
@@ -78,28 +79,51 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
       ctx.stroke();
     }
 
-    // 外枠を太く
-    ctx.strokeStyle = '#999999';
-    ctx.lineWidth = 2;
+    // 2. 5行・5列ごとの太線
+    ctx.strokeStyle = '#b0b0b0';
+    ctx.lineWidth = 1.2;
+
+    // 縦線（5列ごと）
+    for (let col = 5; col < config.cols; col += 5) {
+      const x = padding + col * cellSize;
+      ctx.beginPath();
+      ctx.moveTo(x, padding);
+      ctx.lineTo(x, height - padding);
+      ctx.stroke();
+    }
+
+    // 横線（5行ごと）
+    for (let row = 5; row < config.rows; row += 5) {
+      const y = padding + row * cellSize;
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(width - padding, y);
+      ctx.stroke();
+    }
+
+    // 3. 外枠を太く
+    ctx.strokeStyle = '#666666';
+    ctx.lineWidth = 2.5;
     ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
 
-    // 中央マーク（◎）- 原稿用紙の標準デザイン
+    // 4. 中央マーク（◎）- 原稿用紙の標準デザイン
     // 400字詰めの場合: 右から10列目と11列目の境界線、上から10行目と11行目の境界線の交点
     const centerCol = Math.floor(config.cols / 2); // 10
     const centerRow = Math.floor(config.rows / 2); // 10
     const centerX = padding + centerCol * cellSize; // 列の境界線上
     const centerY = padding + centerRow * cellSize; // 行の境界線上
     
+    ctx.strokeStyle = '#888888';
+    ctx.lineWidth = 1.0;
+    
     // 外側の円
-    ctx.strokeStyle = '#999999';
-    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(centerX, centerY, cellSize * 0.25, 0, Math.PI * 2); // 半径を小さく
+    ctx.arc(centerX, centerY, cellSize * 0.30, 0, Math.PI * 2);
     ctx.stroke();
     
     // 内側の円
     ctx.beginPath();
-    ctx.arc(centerX, centerY, cellSize * 0.12, 0, Math.PI * 2); // 半径を小さく
+    ctx.arc(centerX, centerY, cellSize * 0.15, 0, Math.PI * 2);
     ctx.stroke();
 
     // このページの文字を取得
