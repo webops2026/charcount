@@ -106,6 +106,42 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     ctx.lineWidth = 2.5;
     ctx.strokeRect(padding, padding, config.cols * cellSize, config.rows * cellSize);
 
+    // 4. 魚尾（ぎょび）- 原稿用紙の中央デザイン
+    // 中央縦線の位置
+    const centerCol = Math.floor(config.cols / 2); // 10
+    const centerX = padding + centerCol * cellSize;
+    const topY = padding;
+    const bottomY = padding + config.rows * cellSize;
+    const middleY = padding + (config.rows / 2) * cellSize;
+    
+    ctx.strokeStyle = '#c07070';
+    ctx.lineWidth = 1.5;
+    
+    // 上部のカギ型マーク（魚尾上部）- 上から1/4の位置
+    const upperY = padding + Math.floor(config.rows / 4) * cellSize;
+    const hookWidth = cellSize * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(centerX - hookWidth, upperY);
+    ctx.lineTo(centerX + hookWidth, upperY);
+    ctx.stroke();
+    // 縦線（上から魚尾まで）
+    ctx.beginPath();
+    ctx.moveTo(centerX, topY);
+    ctx.lineTo(centerX, upperY);
+    ctx.stroke();
+    
+    // 下部のカギ型マーク（魚尾下部）- 下から1/4の位置
+    const lowerY = padding + Math.floor(config.rows * 3 / 4) * cellSize;
+    ctx.beginPath();
+    ctx.moveTo(centerX - hookWidth, lowerY);
+    ctx.lineTo(centerX + hookWidth, lowerY);
+    ctx.stroke();
+    // 縦線（魚尾から下まで）
+    ctx.beginPath();
+    ctx.moveTo(centerX, lowerY);
+    ctx.lineTo(centerX, bottomY);
+    ctx.stroke();
+
     // このページの文字を取得
     const startIndex = pageIndex * config.charsPerPage;
     const endIndex = Math.min(startIndex + config.charsPerPage, chars.length);
