@@ -42,7 +42,7 @@ export function ManuscriptEditor({ text }: ManuscriptEditorProps) {
     // 魚尾付き原稿用紙: 横21列（左10列 + 魚尾1列 + 右10列）× 縦20行
     const scale = 2;
     const cellSize = 40; // サイズ感を調整（少し大きく）
-    const gyobiWidth = cellSize * 0.8; // 魚尾列の幅（画像を参考に少し太めに）
+    const gyobiWidth = cellSize * 4.0; // 魚尾列の幅を大幅に広げる（横長にする）
     const padding = 70; // 余白を調整
     
     // 幅 = 左10列 + 魚尾列 + 右10列
